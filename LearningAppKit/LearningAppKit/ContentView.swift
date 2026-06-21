@@ -9,20 +9,29 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    // MARK: - Variables
+    
+    // Variáveis de ambiente (banco e fechar alerta/modais)
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    // Nossa viewModel
     @State var viewModel: HomeViewModel
     
-    // Error handling
+    // Tratamento de erro
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
 
+    // MARK: - Body View
     var body: some View {
         VStack {
+            // Usamos duas listas, em horizontal, uma com o primeiro
+            // objeto, outra com o segundo, para testarmos o CRUD
+            // do nosso Repository.
             HStack {
                 List(viewModel.items) { item in
                     Text(item.timestamp.description)
+                    // No iphone é swipeActions, aqui é contextMenu
                         .contextMenu {
                             Button(action: {
                                 do {
@@ -73,6 +82,7 @@ struct ContentView: View {
                 }
             }
             HStack {
+                // Para testar o add.
                 Button("Create items") {
                     do {
                         try viewModel.addItem(timeStamp: Date())
@@ -84,6 +94,7 @@ struct ContentView: View {
                 }
             }
         }
+        // Carrega os dados já salvos no banco.
         .onAppear() {
             do {
                 try viewModel.load()
@@ -92,6 +103,7 @@ struct ContentView: View {
                 errorMessage = error.localizedDescription
             }
         }
+        // Alerta para caso de erros.
         .alert("Error", isPresented: $showError) {
             Button("Confirm", role: .confirm) {
                 dismiss()
@@ -103,6 +115,7 @@ struct ContentView: View {
 }
 
 #Preview {
+    // Mesma configuração no .app fazemos aqui, para que o preview funcione.
     let container = try! ModelContainer(
         for: Item.self, SecondItem.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)

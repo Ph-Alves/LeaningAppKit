@@ -10,6 +10,10 @@ import SwiftData
 
 @main
 struct LearningAppKitApp: App {
+    // Criamos nosso container
+    // No swiftData, usamos 3 camadas, um Schema, que define as entidades
+    // um Configuration que define como o banco é configurado
+    // um Container, que agrupa tudo e monta nosso banco.
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self, SecondItem.self
@@ -25,6 +29,9 @@ struct LearningAppKitApp: App {
 
     var body: some Scene {
         WindowGroup {
+            // Aqui que definimos nossos tipos concretos.
+            // É uma boa prática nossos tipos concretos estarem todos em um local só (Composition Root).
+            // https://www.essentialdeveloper.com/articles/ios-composition-root-a-key-concept-for-achieving-loose-coupling-ios-lead-essentials-podcast-015/
             ContentView(viewModel: HomeViewModel(
                 itemRepository: GenericRepository<Item>(modelContext: sharedModelContainer.mainContext),
                 secondItemRepository: GenericRepository<SecondItem>(modelContext: sharedModelContainer.mainContext)

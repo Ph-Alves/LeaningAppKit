@@ -9,7 +9,8 @@ import Foundation
 import SwiftData
 
 // MARK: - Repository
-/// Responsável por definir as operações que um repository deve seguir.
+// Responsável por definir as operações que um repository deve seguir.
+// usa associatedType para que a implementação concreta defina qual a entidade do repository.
 protocol RepositoryProtocol<Model> {
     associatedtype Model: PersistentModel
     
