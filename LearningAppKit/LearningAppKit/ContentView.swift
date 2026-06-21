@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+internal import UniformTypeIdentifiers
 
 struct ContentView: View {
     // MARK: - Variables
@@ -80,6 +81,9 @@ struct ContentView: View {
                             })
                         }
                 }
+                List(viewModel.apps, id: \.self) { app in
+                    Text(app.description)
+                }
             }
             HStack {
                 // Para testar o add.
@@ -91,6 +95,10 @@ struct ContentView: View {
                         showError = true
                         errorMessage = error.localizedDescription
                     }
+                }
+                
+                Button("Selecionar apps") {
+                    viewModel.apps = selectApps() ?? []
                 }
             }
         }
@@ -111,6 +119,19 @@ struct ContentView: View {
         } message: {
             Text(errorMessage)
         }
+    }
+}
+
+extension ContentView {
+    func selectApps() -> [URL]? {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.application]
+        panel.canChooseFiles = true
+        panel.allowsMultipleSelection = true
+        panel.directoryURL = URL(filePath: "/Applications")
+        
+        guard panel.runModal() == .OK else { return nil }
+        return panel.urls
     }
 }
 

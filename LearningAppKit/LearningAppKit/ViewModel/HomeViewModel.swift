@@ -23,6 +23,7 @@ class HomeViewModel {
     // Variáveis para a view.
     private(set) var items: [Item] = []
     private(set) var secondItems: [SecondItem] = []
+    var apps: [URL] = []
     
     // MARK: - Init
     // OBS: Precisamos usar ANY, se não o compilador da warning, falando que sem, vai parar de funcionar no futuro.
