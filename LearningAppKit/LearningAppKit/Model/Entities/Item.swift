@@ -8,6 +8,9 @@
 import Foundation
 import SwiftData
 
+// MARK: - SwiftData Model
+// Define uma tabela do swift data chamada Item
+// Possui uma linha da tabela, chamada timestamp.
 @Model
 final class Item {
     var timestamp: Date

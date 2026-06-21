@@ -10,50 +10,108 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Environment(\.dismiss) private var dismiss
+    
+    @State var viewModel: HomeViewModel
+    
+    // Error handling
+    @State private var showError: Bool = false
+    @State private var errorMessage: String = ""
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        VStack {
+            HStack {
+                List(viewModel.items) { item in
+                    Text(item.timestamp.description)
+                        .contextMenu {
+                            Button(action: {
+                                do {
+                                    try viewModel.editItem(item: item, newDate: Date())
+                                } catch {
+                                    showError = true
+                                    errorMessage = error.localizedDescription
+                                }
+                            }, label: {
+                                Image(systemName: "pencil")
+                            })
+                            Button(action: {
+                                do {
+                                    try viewModel.removeItem(item: item)
+                                } catch {
+                                    showError = true
+                                    errorMessage = error.localizedDescription
+                                }
+                            }, label: {
+                                Image(systemName: "xmark")
+                            })
+                        }
+                }
+                List(viewModel.secondItems) { seconditem in
+                    Text(seconditem.name)
+                        .contextMenu {
+                            Button(action: {
+                                do {
+                                    try viewModel.editSecondItem(secondItem: seconditem, newName: "AnotherTest")
+                                } catch {
+                                    showError = true
+                                    errorMessage = error.localizedDescription
+                                }
+                            }, label: {
+                                Image(systemName: "pencil")
+                            })
+                            Button(action: {
+                                do {
+                                    try viewModel.removeSecondItem(item: seconditem)
+                                } catch {
+                                    showError = true
+                                    errorMessage = error.localizedDescription
+                                }
+                            }, label: {
+                                Image(systemName: "xmark")
+                            })
+                        }
+                }
+            }
+            HStack {
+                Button("Create items") {
+                    do {
+                        try viewModel.addItem(timeStamp: Date())
+                        try viewModel.addSecondItem(name: "teste")
+                    } catch {
+                        showError = true
+                        errorMessage = error.localizedDescription
                     }
                 }
-                .onDelete(perform: deleteItems)
             }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
         }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+        .onAppear() {
+            do {
+                try viewModel.load()
+            } catch {
+                showError = true
+                errorMessage = error.localizedDescription
             }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("Confirm", role: .confirm) {
+                dismiss()
+            }
+        } message: {
+            Text(errorMessage)
         }
     }
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+    let container = try! ModelContainer(
+        for: Item.self, SecondItem.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
+    let context = container.mainContext
+    let viewModel = HomeViewModel(
+        itemRepository: GenericRepository<Item>(modelContext: context),
+        secondItemRepository: GenericRepository<SecondItem>(modelContext: context)
+    )
+    ContentView(viewModel: viewModel)
+        .modelContainer(container)
 }
