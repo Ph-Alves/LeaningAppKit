@@ -43,6 +43,7 @@ struct ContentView: View {
                                 }
                             }, label: {
                                 Image(systemName: "pencil")
+                                Text("Editar")
                             })
                             Button(action: {
                                 do {
@@ -53,6 +54,7 @@ struct ContentView: View {
                                 }
                             }, label: {
                                 Image(systemName: "xmark")
+                                Text("Excluir")
                             })
                         }
                 }
@@ -68,6 +70,7 @@ struct ContentView: View {
                                 }
                             }, label: {
                                 Image(systemName: "pencil")
+                                Text("Editar")
                             })
                             Button(action: {
                                 do {
@@ -78,11 +81,13 @@ struct ContentView: View {
                                 }
                             }, label: {
                                 Image(systemName: "xmark")
+                                Text("Excluir")
                             })
                         }
                 }
                 List(viewModel.apps, id: \.self) { app in
-                    Text(app.description)
+                    Image(nsImage: viewModel.returnIcon(url: app.path(percentEncoded: false)))
+                    Text(viewModel.returnName(url: app.path(percentEncoded: false)))
                 }
             }
             HStack {
@@ -97,8 +102,21 @@ struct ContentView: View {
                     }
                 }
                 
+                // Abre um panel e permite selecionar quais apps abrem
                 Button("Selecionar apps") {
                     viewModel.apps = selectApps() ?? []
+                }
+                
+                // Abre os apps e fecha todos os outros
+                Button("Abrir apps (fechará todos os outros apps)") {
+                    Task {
+                        do {
+                            try await viewModel.openApps()
+                        } catch {
+                            showError = true
+                            errorMessage = error.localizedDescription
+                        }
+                    }
                 }
             }
         }
