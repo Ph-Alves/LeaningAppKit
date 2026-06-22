@@ -34,7 +34,8 @@ struct LearningAppKitApp: App {
             // https://www.essentialdeveloper.com/articles/ios-composition-root-a-key-concept-for-achieving-loose-coupling-ios-lead-essentials-podcast-015/
             ContentView(viewModel: HomeViewModel(
                 itemRepository: GenericRepository<Item>(modelContext: sharedModelContainer.mainContext),
-                secondItemRepository: GenericRepository<SecondItem>(modelContext: sharedModelContainer.mainContext)
+                secondItemRepository: GenericRepository<SecondItem>(modelContext: sharedModelContainer.mainContext),
+                testeRepository: GenericRepository<Teste>(modelContext: sharedModelContainer.mainContext)
             ))
         }
         .modelContainer(sharedModelContainer)

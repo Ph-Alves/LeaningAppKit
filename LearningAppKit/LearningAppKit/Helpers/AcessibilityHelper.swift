@@ -9,6 +9,7 @@ import Foundation
 import AppKit
 import ApplicationServices
 
+// TODO: - Implementar um verificador de acessibilidade e pedir permissão caso necessário.
 //enum AcessibilityHelper {
 //    static func hasPermission() -> Bool {
 //        return AXIsProcessTrusted()

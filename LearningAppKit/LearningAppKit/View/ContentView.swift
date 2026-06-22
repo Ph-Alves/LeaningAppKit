@@ -85,6 +85,9 @@ struct ContentView: View {
                             })
                         }
                 }
+                List(viewModel.testes) { teste in
+                    Text("\(teste.idade)")
+                }
                 List(viewModel.apps, id: \.self) { app in
                     Image(nsImage: viewModel.returnIcon(url: app.path(percentEncoded: false)))
                     Text(viewModel.returnName(url: app.path(percentEncoded: false)))
@@ -96,6 +99,7 @@ struct ContentView: View {
                     do {
                         try viewModel.addItem(timeStamp: Date())
                         try viewModel.addSecondItem(name: "teste")
+                        try viewModel.addTeste(idade: 30)
                     } catch {
                         showError = true
                         errorMessage = error.localizedDescription
@@ -156,13 +160,13 @@ extension ContentView {
 #Preview {
     // Mesma configuração no .app fazemos aqui, para que o preview funcione.
     let container = try! ModelContainer(
-        for: Item.self, SecondItem.self,
+        for: Item.self, SecondItem.self, Teste.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     let context = container.mainContext
     let viewModel = HomeViewModel(
         itemRepository: GenericRepository<Item>(modelContext: context),
-        secondItemRepository: GenericRepository<SecondItem>(modelContext: context)
+        secondItemRepository: GenericRepository<SecondItem>(modelContext: context), testeRepository: GenericRepository<Teste>(modelContext: context)
     )
     ContentView(viewModel: viewModel)
         .modelContainer(container)

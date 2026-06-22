@@ -22,18 +22,21 @@ class HomeViewModel {
     // sem que a viewModel conheca o tipo concreto.
     private var itemRepository: any RepositoryProtocol<Item>
     private var secondItemRepository: any RepositoryProtocol<SecondItem>
+    private var testeRepository: any RepositoryProtocol<Teste>
     
     // Variáveis para a view.
     private(set) var items: [Item] = []
     private(set) var secondItems: [SecondItem] = []
+    private(set) var testes: [Teste] = []
     var apps: [URL] = []
     var permission: Bool = false
     
     // MARK: - Init
     // OBS: Precisamos usar ANY, se não o compilador da warning, falando que sem, vai parar de funcionar no futuro.
-    init(itemRepository: any RepositoryProtocol<Item>, secondItemRepository: any RepositoryProtocol<SecondItem>) {
+    init(itemRepository: any RepositoryProtocol<Item>, secondItemRepository: any RepositoryProtocol<SecondItem>, testeRepository: any RepositoryProtocol<Teste>) {
         self.itemRepository = itemRepository
         self.secondItemRepository = secondItemRepository
+        self.testeRepository = testeRepository
     }
     
     // MARK: - Functions
@@ -42,12 +45,18 @@ class HomeViewModel {
     func load() throws {
         self.items = try itemRepository.getAll()
         self.secondItems = try secondItemRepository.getAll()
+        self.testes = try testeRepository.getAll()
     }
     
     // Adiciona no banco e puxa as entidades
     func addItem(timeStamp: Date) throws {
         try itemRepository.add(item: Item(timestamp: timeStamp))
         self.items = try itemRepository.getAll()
+    }
+    
+    func addTeste(idade: Int) throws {
+        try testeRepository.add(item: Teste(idade: idade))
+        self.testes = try testeRepository.getAll()
     }
     
     // Adiciona no banco e puxa as entidades
